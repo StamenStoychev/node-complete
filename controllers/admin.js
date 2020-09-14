@@ -14,11 +14,16 @@ exports.adminProducts = (req, res, next) => {
         prods: products,
         pageTitle: "Admin Products",
         path: "/admin/products",
+
       });
     })
     .catch((err) => {
       console.log(err);
     });
+
+    exports.someThing = () => {
+      console.log('something');
+    }
 
   // Product.fetchAll()
   //   .then(([rows]) => {
