@@ -2,14 +2,15 @@ const express = require("express");
 const path = require("path");
 const bodyParser = require("body-parser");
 const adminRoutes = require("./routes/admin");
-const shopRoute = require("./routes/shop");
+// const shopRoute = require("./routes/shop");
 const pageNotFoundController = require("./controllers/404");
+const mongoConnect = require("./util/database").mongoConnect;
 
 const app = express();
 
 app.set("view engine", "ejs");
 app.set("views", "views");
-
+// za da vzemame elementi ot body
 app.use(bodyParser.urlencoded({ extended: false }));
 //navigira kum public za da rabotim sus css
 app.use(express.static(path.join(__dirname, "public")));
@@ -24,12 +25,15 @@ app.use((req, res, next) => {
   //   .catch((err) => {
   //     console.log(err);
   //   });
+  next();
 });
 
 app.use("/admin", adminRoutes.routes);
 
-app.use(shopRoute);
+// app.use(shopRoute);
 
 app.use(pageNotFoundController.get404);
 
-
+mongoConnect(() => {
+  app.listen(3000);
+});
