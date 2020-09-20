@@ -2,7 +2,7 @@ const express = require("express");
 const path = require("path");
 const bodyParser = require("body-parser");
 const adminRoutes = require("./routes/admin");
-// const shopRoute = require("./routes/shop");
+const shopRoute = require("./routes/shop");
 const pageNotFoundController = require("./controllers/404");
 const mongoConnect = require("./util/database").mongoConnect;
 
@@ -30,7 +30,7 @@ app.use((req, res, next) => {
 
 app.use("/admin", adminRoutes.routes);
 
-// app.use(shopRoute);
+app.use(shopRoute);
 
 app.use(pageNotFoundController.get404);
 
