@@ -29,7 +29,7 @@
                                 <div class="card__actions">
                                     <!-- adding _id cuz of MongoDb -->
                                     <a href="/products/<%= product._id %>" class="btn">Details</a>
-                                    <form action="/cart/<%= product.id %>" method="POST">
+                                    <form action="/cart/<%= product._id %>" method="POST">
                                         <button class="btn">Add to Cart</button>
                                     </form>
                                 </div>

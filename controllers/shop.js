@@ -34,9 +34,6 @@ exports.getProduct = (req, res, next) => {
 exports.cartProducts = (req, res, next) => {
   req.user
     .getCart()
-    .then((cart) => {
-      return cart.getProducts();
-    })
     .then((products) => {
       console.log(products);
       res.render("shop/cart", {
@@ -51,31 +48,10 @@ exports.cartProducts = (req, res, next) => {
 };
 
 exports.addToCart = (req, res, next) => {
-  let fetchedCart;
-  let newQuantity = 1;
   const prodId = req.params.productId;
-  req.user
-    .getCart()
-    //getting user cart
-    .then((cart) => {
-      fetchedCart = cart;
-      return cart.getProducts({ where: { id: prodId } });
-    })
-    .then((products) => {
-      let product;
-      if (products.length > 0) {
-        product = products[0];
-        // when products is in the cart
-        const oldQuantity = product.cartItem.quantity;
-        newQuantity = oldQuantity + 1;
-        return product;
-      }
-      return Product.findByPk(prodId);
-    })
+  Product.getDetails(prodId)
     .then((product) => {
-      return fetchedCart.addProduct(product, {
-        through: { quantity: newQuantity },
-      });
+      return req.user.addToCart(product);
     })
     .then(() => {
       res.redirect("/cart");
@@ -83,6 +59,37 @@ exports.addToCart = (req, res, next) => {
     .catch((err) => {
       console.log(err);
     });
+  // let fetchedCart;
+  // let newQuantity = 1;
+  // req.user
+  //   .getCart()
+  //   //getting user cart
+  //   .then((cart) => {
+  //     fetchedCart = cart;
+  //     return cart.getProducts({ where: { id: prodId } });
+  //   })
+  //   .then((products) => {
+  //     let product;
+  //     if (products.length > 0) {
+  //       product = products[0];
+  //       // when products is in the cart
+  //       const oldQuantity = product.cartItem.quantity;
+  //       newQuantity = oldQuantity + 1;
+  //       return product;
+  //     }
+  //     return Product.findByPk(prodId);
+  //   })
+  //   .then((product) => {
+  //     return fetchedCart.addProduct(product, {
+  //       through: { quantity: newQuantity },
+  //     });
+  //   })
+  //   .then(() => {
+  //     res.redirect("/cart");
+  //   })
+  //   .catch((err) => {
+  //     console.log(err);
+  //   });
 };
 
 exports.getIndex = (req, res, next) => {
@@ -105,8 +112,8 @@ exports.checkOut = (req, res, next) => {
 
 exports.getOrders = (req, res, next) => {
   req.user
-  //extracting the products information with sequelize
-    .getOrders({include: ['products']})
+    //extracting the products information with sequelize
+    .getOrders({ include: ["products"] })
     .then((orders) => {
       console.log(orders);
       res.render("shop/orders", {
