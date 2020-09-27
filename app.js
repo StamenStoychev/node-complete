@@ -18,16 +18,16 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public")));
 
 // adding the user info to the request
-// app.use((req, res, next) => {
-  // User.findById("5f6751c1f449d322f9453a1e")
-  //   .then((user) => {
-  //     req.user = new User(user.name, user.email, user._id, user.cart);
-  //     next();
-  //   })
-  //   .catch((err) => {
-  //     console.log(err);
-  //   });
-// }) ;
+app.use((req, res, next) => {
+  User.findById("5f7063a8a09fdf0554a54917")
+    .then((user) => {
+      req.user = user;
+      next();
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+});
 
 app.use("/admin", adminRoutes.routes);
 
@@ -41,6 +41,23 @@ mongoose
     "mongodb+srv://stamen:1234@cluster0.tesog.mongodb.net/node-complete?retryWrites=true&w=majority"
   )
   .then(() => {
+    User.findOne()
+      .then((user) => {
+        if (!user) {
+          const user = new User({
+            name: "Stamen",
+            email: "Stamen@test.com",
+            cart: {
+              items: [],
+            },
+          });
+          user.save();
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+
     app.listen(3000);
   })
   .catch((err) => {

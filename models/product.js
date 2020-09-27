@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const Shema = mongoose.Schema;
 
-const productShema = {
+const productShema = new Shema({
   title: {
     type: String,
     required: true,
@@ -19,7 +19,11 @@ const productShema = {
     type: String,
     required: true,
   },
-};
+  userId: {
+    type: Shema.Types.ObjectId,
+    ref: "User",
+  },
+});
 
 module.exports = mongoose.model("Product", productShema);
 

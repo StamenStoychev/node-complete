@@ -29,6 +29,7 @@ exports.postAddProduct = (req, res, next) => {
     price: body.price,
     description: body.description,
     imageUrl: body.imageUrl,
+    userId: req.user._id
   });
   product
   // save is a method provided by mongoose
