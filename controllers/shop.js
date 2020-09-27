@@ -1,9 +1,9 @@
 const Product = require("../models/product");
 // const Cart = require("../models/cart");
-const Order = require("../models/order");
+// const Order = require("../models/order");
 
 exports.getProducts = (req, res, next) => {
-  Product.fetchAll()
+  Product.find()
     .then((products) => {
       res.render("shop/product-list", {
         prods: products,
@@ -18,7 +18,8 @@ exports.getProducts = (req, res, next) => {
 
 exports.getProduct = (req, res, next) => {
   const prodId = req.params.productId;
-  Product.getDetails(prodId)
+  // findById is provided by mongoose and dont need to convert the id to ObjectId
+  Product.findById(prodId)
     .then((product) => {
       res.render("shop/product-detail", {
         product: product,
@@ -61,7 +62,7 @@ exports.addToCart = (req, res, next) => {
 };
 
 exports.getIndex = (req, res, next) => {
-  Product.fetchAll()
+  Product.find()
     .then((products) => {
       res.render("shop/index", {
         prods: products,

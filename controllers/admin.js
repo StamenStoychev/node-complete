@@ -1,6 +1,6 @@
 const Product = require("../models/product");
 exports.adminProducts = (req, res, next) => {
-  Product.fetchAll()
+  Product.find()
     .then((products) => {
       res.render("admin/products", {
         prods: products,
@@ -24,18 +24,17 @@ exports.getAddProduct = (req, res, next) => {
 exports.postAddProduct = (req, res, next) => {
   const body = req.body;
   console.log(req.user);
-  const product = new Product(
-    body.title,
-    body.price,
-    body.description,
-    body.imageUrl,
-    null,
-    req.user._id
-  );
+  const product = new Product({
+    title: body.title,
+    price: body.price,
+    description: body.description,
+    imageUrl: body.imageUrl,
+  });
   product
+  // save is a method provided by mongoose
     .save()
     .then((result) => {
-      console.log('Created product');
+      console.log("Created product");
       res.redirect("/admin/products");
     })
     .catch((err) => {
@@ -50,7 +49,7 @@ exports.getEditProduct = (req, res, next) => {
   }
   const prodId = req.params.productId;
   //sequelizer user method
-  Product.getDetails(prodId)
+  Product.findById(prodId)
     .then((product) => {
       res.render("admin/edit-product", {
         pageTitle: "Edit Product",
@@ -69,16 +68,12 @@ exports.postEditProduct = (req, res, next) => {
   const newImageUrl = req.body.imageUrl;
   const newDesc = req.body.description;
   const newPrice = req.body.price;
-  const mongoDbId = prodId;
-  Product.getDetails(prodId)
-    .then((productData) => {
-      const product = new Product(
-        newTitle,
-        newPrice,
-        newDesc,
-        newImageUrl,
-        mongoDbId
-      );
+  Product.findById(prodId)
+    .then((product) => {
+      product.title = newTitle;
+      product.price = newPrice;
+      product.newDesc = newDesc;
+      product.imageUrl = newImageUrl;
       return product.save();
     })
     .then(() => {
@@ -91,7 +86,7 @@ exports.postEditProduct = (req, res, next) => {
 
 exports.deleteAdminItem = (req, res, next) => {
   const prodId = req.params.productId;
-  Product.deleteById(prodId)
+  Product.findByIdAndRemove(prodId)
     .then(() => {
       res.redirect("/admin/products");
     })
