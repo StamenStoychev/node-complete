@@ -11,8 +11,10 @@
             </div>
             <h2>$<%= product.price %></h2>
             <p><%= product.description %></p>
+            <% if ( isAuthenticated ) { %>
             <form action="/cart/<%= product._id %>" method="POST">
                 <button class="btn" type="submit">Add to Cart</button>
             </form>
+            <% } %>
         </main>
         <%- include('../includes/end.ejs') %>

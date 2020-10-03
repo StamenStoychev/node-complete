@@ -32,9 +32,11 @@ app.use(
   })
 );
 
-// adding the user info to the request
 app.use((req, res, next) => {
-  User.findById("5f7063a8a09fdf0554a54917")
+  if (!req.session.user) {
+    return next();
+  }
+  User.findById(req.session.user._id)
     .then((user) => {
       req.user = user;
       next();
@@ -51,6 +53,7 @@ app.use(shopRoute);
 app.use(authRoute);
 
 app.use(pageNotFoundController.get404);
+// adding the user info to the request
 
 // adding Mongoose connection to DB
 mongoose
