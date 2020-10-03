@@ -9,7 +9,7 @@ exports.getLogin = (req, res, next) => {
 };
 
 exports.postLogin = (req, res, next) => {
-  User.findById('5f7063a8a09fdf0554a54917')
+  User.findById("5f7063a8a09fdf0554a54917")
     .then((user) => {
       req.session.user = user;
       req.session.isLoggedIn = true;
@@ -22,3 +22,13 @@ exports.postLogout = (req, res, next) => {
     res.redirect("/");
   });
 };
+
+exports.getSignup = (req, res, next) => {
+  res.render("auth/signup", {
+    path: "/signup",
+    pageTitle: "Signup",
+    isAuthenticated: false,
+  });
+};
+
+exports.postSignup = (req, res, next) => {};
