@@ -8,6 +8,7 @@ const pageNotFoundController = require("./controllers/404");
 // const mongoConnect = require("./util/database").mongoConnect;
 const session = require("express-session");
 const mongoose = require("mongoose");
+const csrf = require("csurf");
 //initializing the session with the mongodb
 const MongoDbStore = require("connect-mongodb-session")(session);
 const User = require("./models/user");
@@ -18,6 +19,10 @@ const store = new MongoDbStore({ uri: MONGODB_URI, collection: "sessions" });
 
 app.set("view engine", "ejs");
 app.set("views", "views");
+
+//defining csrf
+const csrfProtection = csrf();
+
 // za da vzemame elementi ot body
 app.use(bodyParser.urlencoded({ extended: false }));
 //navigira kum public za da rabotim sus css
@@ -32,6 +37,9 @@ app.use(
   })
 );
 
+//enable csrf
+app.use(csrfProtection);
+
 app.use((req, res, next) => {
   if (!req.session.user) {
     return next();
@@ -44,6 +52,13 @@ app.use((req, res, next) => {
     .catch((err) => {
       console.log(err);
     });
+});
+
+//adding csrfToken and isLoggendIn to a locals - easy to maintain in all views
+app.use((req, res, next) => {
+  res.locals.isAuthenticated = req.session.isLoggedIn;
+  res.locals.csrfToken = req.csrfToken();
+  next();
 });
 
 app.use("/admin", adminRoutes.routes);

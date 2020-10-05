@@ -26,6 +26,7 @@
                                         <%= product.description %>
                                     </p>
                                 </div>
+                                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                                 <% if ( isAuthenticated ) { %>
                                     <div class="card__actions">
                                         <a href="/products/<%= product.id %>" class="btn">Details</a>

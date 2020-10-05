@@ -1,5 +1,9 @@
+const { compareSync } = require("bcryptjs");
 const Product = require("../models/product");
 exports.adminProducts = (req, res, next) => {
+  if(!req.session.isLoggedIn){
+    return res.redirect('/login');
+  }
   Product.find()
     .then((products) => {
       res.render("admin/products", {
@@ -15,6 +19,9 @@ exports.adminProducts = (req, res, next) => {
 };
 
 exports.getAddProduct = (req, res, next) => {
+  if(!req.session.isLoggedIn){
+    return res.redirect('/login');
+  }
   res.render("admin/edit-product", {
     pageTitle: "Add Product",
     path: "/admin/add-product",
@@ -25,6 +32,9 @@ exports.getAddProduct = (req, res, next) => {
 
 exports.postAddProduct = (req, res, next) => {
   const body = req.body;
+  if(!req.session.isLoggedIn){
+    return res.redirect('/login');
+  }
   const product = new Product({
     title: body.title,
     price: body.price,
@@ -46,6 +56,9 @@ exports.postAddProduct = (req, res, next) => {
 
 exports.getEditProduct = (req, res, next) => {
   const editMode = req.query.edit;
+  if(!req.session.isLoggedIn){
+    return res.redirect('/login');
+  }
   if (!editMode) {
     return res.redirect("/");
   }
@@ -71,6 +84,9 @@ exports.postEditProduct = (req, res, next) => {
   const newImageUrl = req.body.imageUrl;
   const newDesc = req.body.description;
   const newPrice = req.body.price;
+  if(!req.session.isLoggedIn){
+    return res.redirect('/login');
+  }
   Product.findById(prodId)
     .then((product) => {
       product.title = newTitle;
@@ -89,6 +105,9 @@ exports.postEditProduct = (req, res, next) => {
 
 exports.deleteAdminItem = (req, res, next) => {
   const prodId = req.params.productId;
+  if(!req.session.isLoggedIn){
+    return res.redirect('/login');
+  }
   Product.findByIdAndRemove(prodId)
     .then(() => {
       res.redirect("/admin/products");
