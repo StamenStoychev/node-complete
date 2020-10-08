@@ -9,6 +9,8 @@ const pageNotFoundController = require("./controllers/404");
 const session = require("express-session");
 const mongoose = require("mongoose");
 const csrf = require("csurf");
+const flash = require('connect-flash');
+
 //initializing the session with the mongodb
 const MongoDbStore = require("connect-mongodb-session")(session);
 const User = require("./models/user");
@@ -39,6 +41,7 @@ app.use(
 
 //enable csrf
 app.use(csrfProtection);
+app.use(flash());
 
 app.use((req, res, next) => {
   if (!req.session.user) {
