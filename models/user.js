@@ -11,6 +11,8 @@ const userShema = new Shema({
     type: String,
     required: true,
   },
+  resetToken: String,
+  resetTokenDate: Date,
   cart: {
     items: [
       {
