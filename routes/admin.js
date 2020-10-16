@@ -1,20 +1,28 @@
 const express = require("express");
-const adminController = require('../controllers/admin');
-const isAuth = require('../middleware/is-auth');
+const adminController = require("../controllers/admin");
+const isAuth = require("../middleware/is-auth");
 const router = express.Router();
+const { check } = require("express-validator/check");
 
+router.get("/add-product", isAuth, adminController.getAddProduct);
 
+router.post(
+  "/add-product",
+  [check("title").trim().isEmpty().withMessage("Please enter a title!")],
+  isAuth,
+  adminController.postAddProduct
+);
 
-router.get("/add-product", isAuth , adminController.getAddProduct);
+router.get("/products", isAuth, adminController.adminProducts);
 
-router.post("/add-product", isAuth, adminController.postAddProduct);
+router.get("/edit-product/:productId", isAuth, adminController.getEditProduct);
 
-router.get('/products', isAuth, adminController.adminProducts);
+router.post("/edit-product", isAuth, adminController.postEditProduct);
 
-router.get('/edit-product/:productId', isAuth, adminController.getEditProduct);
-
-router.post('/edit-product', isAuth, adminController.postEditProduct);
-
-router.post('/delete-product/:productId', isAuth, adminController.deleteAdminItem);
+router.post(
+  "/delete-product/:productId",
+  isAuth,
+  adminController.deleteAdminItem
+);
 
 exports.routes = router;

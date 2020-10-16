@@ -3,6 +3,7 @@ const authController = require("../controllers/auth");
 const router = express.Router();
 const { check, body } = require("express-validator/check");
 const User = require("../models/user");
+const bcrypt = require("bcryptjs");
 
 router.get("/login", authController.getLogin);
 router.post(
@@ -18,7 +19,20 @@ router.post(
           return true;
         });
       }),
-    check("password", "Incorrect password!").isLength({ min: 5 }),
+    check("password", "Incorrect password!")
+      .isLength({ min: 5 })
+      .custom((value, { req }) => {
+        return User.findOne({ email: req.body.email }).then((user) => {
+          if (user) {
+            return bcrypt.compare(value, user.password).then((doMatch) => {
+              if (!doMatch) {
+                return Promise.reject("Invalid password!");
+              }
+              return true;
+            });
+          }
+        });
+      }),
   ],
   authController.postLogin
 );

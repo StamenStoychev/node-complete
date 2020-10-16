@@ -35,6 +35,11 @@ exports.getLogin = (req, res, next) => {
     pageTitle: "Login",
     path: "/login",
     error: message,
+    oldInput: {
+      email: "",
+      password: "",
+    },
+    validationErrors: [],
   });
 };
 
@@ -47,6 +52,11 @@ exports.postLogin = (req, res, next) => {
       path: "/login",
       pageTitle: "Login",
       error: errors.errors[0].msg,
+      oldInput: {
+        email: email,
+        password: password,
+      },
+      validationErrors: errors.array(),
     });
   }
   User.findOne({ email: email })
