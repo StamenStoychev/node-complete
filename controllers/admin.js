@@ -1,6 +1,9 @@
 const { compareSync } = require("bcryptjs");
 const Product = require("../models/product");
+const { validationResult } = require("express-validator/check");
+
 exports.adminProducts = (req, res, next) => {
+  const errors = validationResult(req);
   if (!req.session.isLoggedIn) {
     return res.redirect("/login");
   }
@@ -25,13 +28,33 @@ exports.getAddProduct = (req, res, next) => {
     pageTitle: "Add Product",
     path: "/admin/add-product",
     editing: false,
+    hasErrors: false,
+    error: false,
   });
 };
 
 exports.postAddProduct = (req, res, next) => {
   const body = req.body;
+  const errors = validationResult(req);
+
   if (!req.session.isLoggedIn) {
     return res.redirect("/login");
+  }
+  if (!errors.isEmpty()) {
+    console.log(errors.array());
+    return res.status(422).render("admin/edit-product", {
+      pageTitle: "Add Product",
+      path: "/admin/add-product",
+      editing: false,
+      hasErrors: true,
+      error: errors.array()[0].msg,
+      product: {
+        title: body.title,
+        price: body.price,
+        description: body.description,
+        imageUrl: body.imageUrl,
+      },
+    });
   }
   const product = new Product({
     title: body.title,
@@ -54,6 +77,7 @@ exports.postAddProduct = (req, res, next) => {
 
 exports.getEditProduct = (req, res, next) => {
   const editMode = req.query.edit;
+  const errors = validationResult(req);
   if (!req.session.isLoggedIn) {
     return res.redirect("/login");
   }
@@ -69,6 +93,8 @@ exports.getEditProduct = (req, res, next) => {
         path: "/admin/edit-product",
         editing: editMode,
         product: product,
+        hasErrors: false,
+        error: false,
       });
     })
     .catch((err) => {
@@ -76,13 +102,30 @@ exports.getEditProduct = (req, res, next) => {
     });
 };
 exports.postEditProduct = (req, res, next) => {
+  const body = req.body;
   const prodId = req.body.productId;
   const newTitle = req.body.title;
   const newImageUrl = req.body.imageUrl;
   const newDesc = req.body.description;
   const newPrice = req.body.price;
+  const errors = validationResult(req);
   if (!req.session.isLoggedIn) {
     return res.redirect("/login");
+  }
+  if (!errors.isEmpty()) {
+    return res.status(422).render("admin/edit-product", {
+      pageTitle: "Add Product",
+      path: "/admin/add-product",
+      editing: false,
+      hasErrors: true,
+      error: errors.errors[0].msg,
+      product: {
+        title: body.title,
+        price: body.price,
+        description: body.description,
+        imageUrl: body.imageUrl,
+      },
+    });
   }
   Product.findById(prodId)
     .then((product) => {
